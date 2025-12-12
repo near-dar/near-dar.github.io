@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Emily ✨</title>
+  <style>
+    :root{
+      --pink:#ff3b7a;
+      --ink:#1f1f1f;
+      --card:rgba(255,255,255,.82);
+      --border:rgba(0,0,0,.06);
+      --shadow:0 14px 40px rgba(0,0,0,.10);
+    }
+    body{
+      margin:0; min-height:100vh; display:grid; place-items:center;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color:var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, #ffe1ee 0%, transparent 45%),
+        radial-gradient(circle at 80% 0%, #e9e2ff 0%, transparent 45%),
+        radial-gradient(circle at 50% 100%, #fff3d7 0%, transparent 55%),
+        #fff;
+    }
+    .card{
+      width:min(560px, 92vw);
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius: 22px;
+      padding: 22px 22px 18px;
+      box-shadow: var(--shadow);
+      text-align:center;
+      position:relative;
+      overflow:hidden;
+      backdrop-filter: blur(6px);
+    }
+    h1{
+      margin: 0 0 10px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 30px;
+      font-weight: 700;
+    }
+    p{
+      margin: 0 0 18px;
+      font-size: 16px;
+      line-height: 1.35;
+      opacity:.92;
+    }
+    .btns{
+      display:flex; gap:12px; justify-content:center; flex-wrap:wrap;
+      margin-top: 6px;
+      position: relative;
+    }
+    button{
+      border:0; padding:12px 18px; border-radius: 999px;
+      font-weight:800; cursor:pointer; font-size:16px;
+      transition: transform .14s ease, filter .14s ease, opacity .14s ease;
+      user-select:none;
+      will-change: transform;
+    }
+    button:active{ transform: scale(.98); }
+    .yes{ background:var(--pink); color:white; }
+    .no{ background:#eee; color:#222; }
+    .hint{
+      margin-top:14px; font-size:13px; opacity:.7;
+    }
+    .line{
+      height:1px; background:rgba(0,0,0,.06); margin:16px 0 12px;
+    }
+
+    /* FX */
+    .fx{ position:absolute; inset:0; pointer-events:none; }
+    .float{
+      position:absolute; bottom:-30px;
+      animation: floatUp 1.6s ease-in forwards;
+      opacity:.95;
+    }
+    @keyframes floatUp{
+      to { transform: translateY(-120vh) rotate(18deg); opacity:0; }
+    }
+    .bigHeart{
+      font-size: 72px;
+      margin: 8px 0 6px;
+      animation: beat 1.05s ease-in-out infinite;
+    }
+    @keyframes beat{
+      0%,100%{ transform: scale(1); }
+      50%{ transform: scale(1.08); }
+    }
+
+    /* mini sacudida */
+    .shake{
+      animation: shake .22s ease-in-out;
+    }
+    @keyframes shake{
+      0%{ transform: translateX(0); }
+      33%{ transform: translateX(-4px); }
+      66%{ transform: translateX(4px); }
+      100%{ transform: translateX(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="fx" id="fx"></div>
+
+    <h1 id="title">Emily…</h1>
+    <p id="msg">¿Quieres ser mi novia? 💘</p>
+
+    <div class="btns">
+      <button class="yes" id="yesBtn">Sí 💖</button>
+      <button class="no" id="noBtn">No 🙈</button>
+    </div>
+
+    <div class="line"></div>
+    <div class="hint" id="hint">Sin presión… pero mira qué bonito el “Sí” 😅</div>
+  </div>
+
+<script>
+  const NAME_HER = "Emily";
+  const NAME_ME  = "Deybi";
+
+  const steps = [
+    { title: `${NAME_HER}…`, msg: `¿Quieres ser mi novia? 💘`, hint: `Prometo cuidarte bonito, con calma 😌` },
+    { title: `Piénsalo dos segunditos 🫶`, msg: `${NAME_HER}, me gustas… ¿me das el “sí”?`, hint: `Yo invito algo rico y conversamos 🥐☕` },
+    { title: `Ok, trato elegante 😌`, msg: `Yo pongo las flores 🌷 y tú pones tu sonrisa… ¿sí?`, hint: `Te juro que soy buen plan.` },
+    { title: `Ya pues… suavecito`, msg: `No te pido perfección… solo una oportunidad conmigo, ${NAME_HER}.`, hint: `Si algo no te gusta, lo hablamos. Siempre.` },
+    { title: `Última (mentira 😅)`, msg: `¿Me dejas ser tu novio y tratarte como mereces?`, hint: `Con cariño. Sin drama. Con respeto.` },
+    { title: `Dato importante`, msg: `Cada “No” hace el “Sí” más grande 🙈`, hint: `Ciencia pura (según Deybi).` },
+    { title: `Me estás tentando`, msg: `Dime que sí y te hago una playlist 😌💘`, hint: `100% dedicada, 0% cringe. (o poquito).` }
+  ];
+
+  let i = 0;
+
+  const fx = document.getElementById("fx");
+  const card  = document.getElementById("card");
+  const title = document.getElementById("title");
+  const msg   = document.getElementById("msg");
+  const hint  = document.getElementById("hint");
+
+  const yesBtn = document.getElementById("yesBtn");
+  const noBtn  = document.getElementById("noBtn");
+
+  function popFX(amount=12){
+    const items = ["💖","💘","💗","💕","✨","🌷"];
+    for(let k=0;k<amount;k++){
+      const el = document.createElement("div");
+      el.className = "float";
+      el.textContent = items[Math.floor(Math.random()*items.length)];
+      el.style.left = (Math.random()*100) + "%";
+      el.style.fontSize = (14 + Math.random()*22) + "px";
+      el.style.animationDuration = (1.1 + Math.random()*1.5) + "s";
+      fx.appendChild(el);
+      setTimeout(()=>el.remove(), 1800);
+    }
+  }
+
+  function setStep(idx){
+    const s = steps[idx % steps.length];
+    title.textContent = s.title;
+    msg.textContent   = s.msg;
+    hint.textContent  = s.hint;
+
+    // CRECE SIEMPRE (sin explotar la pantalla): log(1+i)
+    const scaleYes = 1 + Math.log1p(idx) * 0.55; // siempre sube
+    yesBtn.style.transform = `scale(${scaleYes.toFixed(3)})`;
+
+    // “No” se pone juguetón: se mueve un poquito cada vez
+    const dx = (Math.random()*2 - 1) * Math.min(18 + idx, 60);
+    const dy = (Math.random()*2 - 1) * Math.min(10 + idx, 30);
+    const rot = (Math.random()*2 - 1) * 6;
+    noBtn.style.transform = `translate(${dx.toFixed(0)}px, ${dy.toFixed(0)}px) rotate(${rot.toFixed(0)}deg)`;
+  }
+
+  function shake(){
+    card.classList.remove("shake");
+    void card.offsetWidth; // reset anim
+    card.classList.add("shake");
+  }
+
+  noBtn.addEventListener("click", () => {
+    i++;
+    setStep(i);
+    popFX(10);
+    shake();
+  });
+
+  yesBtn.addEventListener("click", () => {
+    yesBtn.disabled = true;
+    noBtn.disabled = true;
+    noBtn.style.opacity = ".55";
+    fx.innerHTML = "";
+
+    title.textContent = `SABÍA QUE SÍ 😭💖`;
+    msg.innerHTML = `<div class="bigHeart">💗</div>
+      <div style="font-family:Georgia,serif; font-size:18px;">
+        ${NAME_HER}, gracias por decir que sí.
+      </div>`;
+    hint.textContent = `${NAME_ME} está feliz. ¿Te invito a una cita bonita esta semana? 😌`;
+
+    const burst = () => popFX(26);
+    burst(); setTimeout(burst, 450); setTimeout(burst, 900);
+  });
+
+  // inicio
+  setStep(0);
+  popFX(6);
+</script>
+</body>
+</html>
